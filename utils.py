@@ -1,58 +1,19 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
+from sklearn.datasets import load_digits
 
 import warnings
 
-class Data(object):
+def show_digit(digit, label, num):
+    plt.gray()
+    plt.matshow(digit[num].reshape((8,8)))
+    plt.title("Training: {}".format(label[num]))
+    plt.show()
 
-    @property
-    def X(self):
-        return self._X
-
-    @X.setter
-    def X(self, data):
-        self._X = data
-
-    @property
-    def labels(self):
-        return self._labels
-
-    @labels.setter
-    def labels(self, labels):
-        self._labels = labels
-
-class DataSet(object):
-    def __init__(self):
-        self.train = Data()
-        self.test = Data()
-
-    @property
-    def trainSet(self):
-        return self.train.X, self.train.labels
-
-    @property
-    def testSet(self):
-        return self.test.X, self.test.labels
-
-
-class CONSTANTS(object):
-
-    Mnist = DataSet()
-
-    Mnist.train.X = pd.read_table("https://raw.githubusercontent.com/lazyprogrammer/machine_learning_examples/master/mnist_csv/Xtrain.txt",
-                                  sep=',', header=None)
-    Mnist.train.labels = pd.read_table("https://raw.githubusercontent.com/lazyprogrammer/machine_learning_examples/master/mnist_csv/label_train.txt",
-                                       header=None, squeeze=True)
-
-    Mnist.test.X = pd.read_table("https://raw.githubusercontent.com/lazyprogrammer/machine_learning_examples/master/mnist_csv/Xtest.txt",
-                                 sep=',', header=None)
-
-    Mnist.test.labels = pd.read_table("https://raw.githubusercontent.com/lazyprogrammer/machine_learning_examples/master/mnist_csv/label_test.txt",
-                                      header=None, squeeze=True)
-
-def get_data(dataSet, limit=None):
+def get_data(limit=None):
     """Gets mnist data from lazyprogrammers' hit hub.
 
     :param limit:
@@ -61,7 +22,7 @@ def get_data(dataSet, limit=None):
     :return: np.ndarray (N,D), np.ndarray (N,)
         X, Y mnist features and labels
     """
-    data, labels = dataSet
+    data, labels = load_digits(return_X_y=True)
 
     X, Y = shuffle(data, labels)
     if limit is not None:
@@ -70,7 +31,5 @@ def get_data(dataSet, limit=None):
             warnings.warn("Limit of {} exceeds data sample size of {}".format(limit, xSize))
         X, Y = X[:limit], Y[:limit]
 
-    return X.as_matrix(), Y.as_matrix()
+    return X, Y
 
-
-a, b = get_data(CONSTANTS.Mnist.trainSet)
